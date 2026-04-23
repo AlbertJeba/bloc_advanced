@@ -1,0 +1,50 @@
+Build Commands
+--------------
+
+For DEV APK:
+    flutter build apk -t lib/main/main_dev.dart
+
+For UAT APK:
+    flutter build apk -t lib/main/main_staging.dart
+
+For Prod APK:
+    flutter build apk -t lib/main.dart
+
+For DEV App Bundle:
+    flutter build appbundle --target=lib/main/main_dev.dart
+
+For UAT App Bundle:
+    flutter build appbundle --target=lib/main/main_staging.dart
+
+For Prod App Bundle:
+    flutter build appbundle --target=lib/main.dart
+
+
+IOS Pod CMD
+-----------
+
+    cd ios
+    pod install
+
+
+IOS Build Settings (User-Defined)
+---------------------------------
+
+For UAT (Debug/Profile):
+    FLUTTER_TARGET: lib/main/main_staging.dart
+
+For Prod (Release):
+    FLUTTER_TARGET: lib/main.dart
+
+
+For Feature Folder
+------------------
+
+mkdir -p lib/features/NAME/{data/{datasource,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}}
+
+
+For Feature Folder & Files
+-------------------------
+
+NAME="feature_name" && mkdir -p lib/features/$NAME/{data/{datasource,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}} && touch lib/features/$NAME/{data/datasource/${NAME}_remote_data_source.dart,data/repositories/${NAME}_repository_impl.dart,domain/repositories/${NAME}_repository.dart,domain/use_case/${NAME}_use_case.dart,presentation/cubit/{${NAME}_cubit.dart,${NAME}_state.dart},presentation/pages/${NAME}.dart}
+
