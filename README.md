@@ -39,7 +39,7 @@ A production-ready Flutter template demonstrating **Clean Architecture**, **BLoC
 
 | Requirement | Version |
 |-------------|---------|
-| Flutter SDK | `3.38.7` |
+| Flutter SDK | `3.41.7` |
 | Dart SDK | `^3.10.3` |
 | Android Studio / VS Code | Latest |
 | Xcode (for iOS) | Latest |
@@ -232,6 +232,7 @@ lib/
 │   ├── network/                 # Networking (Dio)
 │   │   ├── dio_network_service.dart
 │   │   ├── network_service.dart
+│   │   ├── auth_interceptors.dart   # Automatic token refresh & 401 handling
 │   │   └── connection/          # Connectivity checker
 │   └── utils/                   # Utility functions
 │
@@ -285,11 +286,11 @@ lib/
 | Folder | Purpose |
 |--------|---------|
 | `constants/` | App-wide constants: routes, endpoints, asset paths, date conversions, language config. |
-| `database/` | Local database setup and helpers (e.g., Hive). |
+| `database/` | **Encrypted Local Storage**: Implementation of Hive with `flutter_secure_storage` for 256-bit AES encryption. |
 | `dependency_injection/` | Service Locator setup using `get_it`. |
 | `exceptions/` | Custom exception classes for error handling. |
 | `extension/` | Dart extension methods for added functionality. |
-| `network/` | Dio client setup, interceptors, API helpers. |
+| `network/` | Dio client setup, **5000ms timeouts**, Auth interceptors, API helpers. |
 | `utils/` | General utility functions and helpers. |
 
 ### 📂 Shared (`lib/shared/`)
@@ -608,7 +609,7 @@ Besides `dependencies`, the `pubspec.yaml` contains:
 
 1.  **Environment**: 
     *   **Dart SDK**: `^3.10.3` (Requires Dart SDK version 3.10.3 or higher).
-    *   **Flutter SDK**: `3.38.4` (Recommended Flutter version for this project).
+    *   **Flutter SDK**: `3.41.7` (Required Flutter version for this project).
 2.  **Dev Dependencies**: Tools only for developers, not in the final app.
     *   `flutter_lints`: Linting rules for code quality and consistency.
     *   `flutter_launcher_icons`: Generates app icons for Android/iOS.
@@ -728,6 +729,11 @@ dart run rename_app:main all="App Name"
 - [ ] Always handle errors gracefully
 - [ ] Use models for type-safe JSON parsing
 - [ ] Add loading indicators during API calls
+- [ ] **Network Resilience**: Use global 5000ms timeouts and Auth Interceptors for reliable API handling.
+
+### Security
+- [ ] **Data Encryption**: Sensitive data (Tokens, User Profiles) must be stored in encrypted Hive boxes.
+- [ ] **Secure Storage**: Use `SecureStorageService` to manage encryption keys; never hardcode keys in the source.
 
 ### Testing
 - [ ] Write unit tests for UseCases

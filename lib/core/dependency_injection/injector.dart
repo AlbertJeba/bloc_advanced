@@ -1,4 +1,5 @@
 import 'package:bloc_advanced/core/database/hive_storage_service.dart';
+import 'package:bloc_advanced/core/database/secure_storage_service.dart';
 import 'package:bloc_advanced/core/network/dio_network_service.dart';
 import 'package:bloc_advanced/core/network/network_service.dart';
 import 'package:bloc_advanced/features/dashboard/data/datasource/dashboard_remote_data_source.dart';
@@ -31,8 +32,10 @@ Future<void> init() async {
     /// --- Core Services ---
     // Network Service (handles API calls)
     ..registerLazySingleton<NetworkService>(DioNetworkService.new)
+    // Secure Storage (handles encryption keys)
+    ..registerLazySingleton<SecureStorageService>(SecureStorageService.new)
     // Hive Service (handles Local DB)
-    ..registerLazySingleton<HiveService>(HiveService.new)
+    ..registerLazySingleton<HiveService>(() => HiveService(injector()))
 
     /// --- DataSources (Layer 1) ---
     // Login Data Source

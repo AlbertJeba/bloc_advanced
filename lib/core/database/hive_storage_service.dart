@@ -3,27 +3,37 @@ import 'dart:convert';
 import 'package:bloc_advanced/core/constants/constant.dart';
 import 'package:bloc_advanced/core/database/storage_service.dart';
 import 'package:bloc_advanced/shared/models/user_data.dart';
+import 'package:bloc_advanced/core/database/secure_storage_service.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 /// HiveService
 ///
 /// Implementation of StorageService using Hive NoSQL database.
-///
-/// What is Hive?
-/// - A super fast, lightweight key-value database for Flutter.
-/// - We use it to save things like the User's Login Token so they stay logged in.
+/// Now enhanced with 256-bit AES encryption via SecureStorageService.
 class HiveService implements StorageService {
+  final SecureStorageService _secureStorage;
   Box? box;
+
+  HiveService(this._secureStorage);
 
   // Completer is used to wait for the box to open if it hasn't yet
   final Completer<Box> initCompleter = Completer<Box>();
 
-  /// Initialize the database
+  /// Initialize the database with encryption
   @override
   Future<void> init() async {
     await Hive.initFlutter();
-    // Open a box named 'bloc2025HiveService'
-    initCompleter.complete(Hive.openBox('bloc2025HiveService'));
+    
+    // Get the encryption key from secure storage
+    final encryptionKey = await _secureStorage.getEncryptionKey();
+    
+    // Open an encrypted box
+    final encryptedBox = await Hive.openBox(
+      'bloc2025HiveService',
+      encryptionCipher: HiveAesCipher(encryptionKey),
+    );
+    
+    initCompleter.complete(encryptedBox);
   }
 
   /// Check if database is ready

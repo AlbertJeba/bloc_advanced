@@ -13,6 +13,7 @@ const englishLanguage = 'assets/language/en.json';
 /// Database Keys (used for Hive storage)
 const userDbKey = 'userDbKey'; // Key to store user object
 const userToken = 'token';     // Key to store auth token
+const refreshToken = 'refreshToken'; // Key to store refresh token
 const sendOtpFlag = 'send';
 const verifyOtpFlag = 'verify';
 const seenOnboarding = 'seenOnboarding';
