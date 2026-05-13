@@ -53,9 +53,9 @@ abstract class EnvInfo {
 extension _EnvProperties on AppEnvironment {
   /// App display names per environment.
   static const _appTitles = {
-    AppEnvironment.dev: 'BLOC Dev',
-    AppEnvironment.stage: 'BLOC Staging',
-    AppEnvironment.prod: 'BLOC Prod',
+    AppEnvironment.dev: 'InstaMart Dev',
+    AppEnvironment.stage: 'InstaMart Staging',
+    AppEnvironment.prod: 'InstaMart',
   };
 
   /// Database connection strings (currently unused).

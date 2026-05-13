@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Professional color palette for the app
+/// Professional color palette for the app - Updated for InstaMart (Fresh Green Theme)
 class AppColors {
-  // Primary Colors - Modern Deep Blue
-  static const Color colorPrimary = Color(0xFF2563EB);
-  static const Color colorPrimaryDark = Color(0xFF1D4ED8);
-  static const Color colorPrimaryLight = Color(0xFF3B82F6);
+  // Primary Colors - Fresh InstaMart Green
+  static const Color colorPrimary = Color(0xFF22C55E);
+  static const Color colorPrimaryDark = Color(0xFF16A34A);
+  static const Color colorPrimaryLight = Color(0xFF4ADE80);
 
-  // Secondary Colors - Vibrant Teal
+  // Secondary Colors - Soft Mint
   static const Color colorSecondary = Color(0xFF0D9488);
   static const Color colorSecondaryDark = Color(0xFF0F766E);
   static const Color colorSecondaryLight = Color(0xFF14B8A6);
@@ -44,11 +44,11 @@ class AppColors {
   // Input field colors
   static const Color inputBackground = Color(0xFFF1F5F9);
   static const Color inputBorder = Color(0xFFE2E8F0);
-  static const Color inputFocusBorder = Color(0xFF2563EB);
+  static const Color inputFocusBorder = Color(0xFF22C55E);
 
   // Button colors
   static const Color buttonDisabledColor = Color(0xFFCBD5E1);
-  static const Color buttonGradientStart = Color(0xFF3B82F6);
+  static const Color buttonGradientStart = Color(0xFF22C55E);
 
   // Legacy color mappings for backward compatibility
   static const Color color858485 = Color(0xFF64748B);
@@ -57,7 +57,7 @@ class AppColors {
   static const Color color58BCBD = Color(0xFF0D9488);
   static const Color color263238 = Color(0xFF1E293B);
   static const Color color4F4F4F = Color(0xFF475569);
-  static const Color color1F2155 = Color(0xFF2563EB);
+  static const Color color1F2155 = Color(0xFF22C55E);
   static const Color colorEBF3F3 = Color(0xFFF0FDFA);
   static const Color color4C4C4C = Color(0xFF475569);
   static const Color color10100E = Color(0xFF0F172A);

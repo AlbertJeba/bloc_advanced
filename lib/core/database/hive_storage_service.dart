@@ -22,6 +22,7 @@ class HiveService implements StorageService {
   /// Initialize the database with encryption
   @override
   Future<void> init() async {
+    if (initCompleter.isCompleted) return;
     await Hive.initFlutter();
     
     // Get the encryption key from secure storage

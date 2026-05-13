@@ -11,6 +11,7 @@ class ApiEndpoint {
   static const String authMe = 'auth/me';
   static const String refreshToken = 'auth/refresh';
 
-  /// Dashboard endpoints
+  /// Grocery & Menu endpoints
   static const String products = 'products';
+  static const String categories = 'products/categories';
 }

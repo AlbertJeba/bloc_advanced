@@ -28,8 +28,8 @@ A production-ready Flutter template demonstrating **Clean Architecture**, **BLoC
 ## 📱 What This App Does
 
 1.  **Splash Screen** - Animations and session check.
-2.  **Login Screen** - Authentication using the standardized `PrimaryButton`.
-3.  **Dashboard** - Products with pagination and cached `CustomNetworkImage`.
+2.  **Login Screen** - Authentication with secure token handling.
+3.  **InstaMart Menu** - A premium grocery menu with horizontal categories, **Skeletonizer** loading, and **Share** functionality.
 
 ---
 
@@ -230,10 +230,10 @@ lib/
 │   ├── exceptions/              # Custom exceptions
 │   ├── extension/               # Dart extensions
 │   ├── network/                 # Networking (Dio)
-│   │   ├── dio_network_service.dart
-│   │   ├── network_service.dart
-│   │   ├── auth_interceptors.dart   # Automatic token refresh & 401 handling
-│   │   └── connection/          # Connectivity checker
+│   ├── services/                # Core App Services
+│   │   ├── share_service.dart   # Universal sharing (share_plus)
+│   │   ├── url_service.dart     # URL/Phone/Email launcher
+│   │   └── permission_service.dart # System permission management
 │   └── utils/                   # Utility functions
 │
 ├── features/                    # Feature modules
@@ -252,10 +252,10 @@ lib/
 │   │   └── presentation/
 │   │       ├── cubit/
 │   │       └── pages/
-│   └── dashboard/               # Dashboard feature
-│       ├── data/
-│       ├── domain/
-│       └── presentation/
+│   ├── grocery_menu/            # InstaMart style menu feature
+│   │   ├── data/
+│   │   ├── domain/
+│   │   └── presentation/
 │
 ├── routes/                      # Navigation
 │   └── app_routes.dart          # GoRouter configuration
@@ -296,10 +296,7 @@ lib/
 ### 📂 Shared (`lib/shared/`)
 *Reusable components used across multiple features.*
 
-| Folder | Purpose |
-|--------|---------|
-| `config/` | App configuration (e.g., dimensions, sizes). |
-| `models/` | Shared data models used across features. |
+| `services/` | `ShareService`, `UrlService`, `PermissionService`. |
 | `theme/` | App theme, colors, and text styles. |
 | `widgets/` | `PrimaryButton`, `CustomNetworkImage`, `CustomLoader`, `CustomTextInput`, `CustomToast`. |
 

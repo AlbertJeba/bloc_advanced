@@ -1,50 +1,47 @@
 import 'dart:convert';
 
-Product productFromJson(String str) => Product.fromJson(json.decode(str));
-String productToJson(Product data) => json.encode(data.toJson());
+InstamartModel instamartModelFromJson(String str) => InstamartModel.fromJson(json.decode(str));
+String instamartModelToJson(InstamartModel data) => json.encode(data.toJson());
 
-/// Product model matching DummyJSON product response
-class Product {
+class InstamartModel {
   int? id;
   String? title;
   String? description;
-  String? category;
   double? price;
   double? discountPercentage;
   double? rating;
   int? stock;
   String? brand;
+  String? category;
   String? thumbnail;
   List<String>? images;
 
-  Product({
+  InstamartModel({
     this.id,
     this.title,
     this.description,
-    this.category,
     this.price,
     this.discountPercentage,
     this.rating,
     this.stock,
     this.brand,
+    this.category,
     this.thumbnail,
     this.images,
   });
 
-  Product.fromJson(dynamic json) {
+  InstamartModel.fromJson(dynamic json) {
     id = json['id'];
     title = json['title'];
     description = json['description'];
-    category = json['category'];
     price = (json['price'] as num?)?.toDouble();
     discountPercentage = (json['discountPercentage'] as num?)?.toDouble();
     rating = (json['rating'] as num?)?.toDouble();
     stock = json['stock'];
     brand = json['brand'];
+    category = json['category'];
     thumbnail = json['thumbnail'];
-    if (json['images'] != null) {
-      images = List<String>.from(json['images']);
-    }
+    images = json['images'] != null ? List<String>.from(json['images']) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -52,14 +49,16 @@ class Product {
     map['id'] = id;
     map['title'] = title;
     map['description'] = description;
-    map['category'] = category;
     map['price'] = price;
     map['discountPercentage'] = discountPercentage;
     map['rating'] = rating;
     map['stock'] = stock;
     map['brand'] = brand;
+    map['category'] = category;
     map['thumbnail'] = thumbnail;
-    map['images'] = images;
+    if (images != null) {
+      map['images'] = images;
+    }
     return map;
   }
 }
