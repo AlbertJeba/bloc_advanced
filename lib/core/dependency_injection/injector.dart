@@ -1,7 +1,9 @@
 import 'package:bloc_advanced/core/database/hive_storage_service.dart';
 import 'package:bloc_advanced/core/database/secure_storage_service.dart';
+import 'package:bloc_advanced/core/network/connection/network_info.dart';
 import 'package:bloc_advanced/core/network/dio_network_service.dart';
 import 'package:bloc_advanced/core/network/network_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:bloc_advanced/features/instamart/data/datasource/instamart_remote_data_source.dart';
 import 'package:bloc_advanced/features/instamart/data/repositories/instamart_repository_impl.dart';
 import 'package:bloc_advanced/features/instamart/domain/repositories/instamart_repository.dart';
@@ -16,9 +18,9 @@ import 'package:get_it/get_it.dart';
 final injector = GetIt.instance;
 
 /// Dependency Injection Setup
-/// 
-/// This function initializes all services, data sources, repositories, 
-/// and use cases for the application. It follows a layered registration 
+///
+/// This function initializes all services, data sources, repositories,
+/// and use cases for the application. It follows a layered registration
 /// approach to ensure dependencies are resolved correctly.
 Future<void> init() async {
   /// --- Core Services (Layer 0) ---
@@ -30,6 +32,10 @@ Future<void> init() async {
   injector.registerLazySingleton<HiveService>(() => hiveService);
 
   injector.registerLazySingleton<NetworkService>(DioNetworkService.new);
+  injector.registerLazySingleton<Connectivity>(Connectivity.new);
+  injector.registerLazySingleton<NetworkInfo>(
+    () => NetworkInfoImpl(injector()),
+  );
 
   /// --- DataSources (Layer 1) ---
   injector
@@ -41,7 +47,6 @@ Future<void> init() async {
     ..registerLazySingleton<InstamartRemoteDataSource>(
       () => InstamartRemoteDataSourceImpl(injector()),
     )
-
     /// --- Repositories (Layer 2) ---
     // Login Repo
     ..registerLazySingleton<LoginRepository>(
@@ -51,7 +56,6 @@ Future<void> init() async {
     ..registerLazySingleton<InstamartRepository>(
       () => InstamartRepositoryImpl(injector()),
     )
-
     /// --- UseCases (Layer 3) ---
     // Login Logic
     ..registerLazySingleton<LoginUseCases>(() => LoginUseCases(injector()))
