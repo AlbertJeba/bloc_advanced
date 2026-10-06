@@ -1,55 +1,65 @@
 import 'dart:convert';
+import 'package:bloc_advanced/shared/models/user_data.dart';
 
-LoginResponse loginResponseFromJson(String str) => LoginResponse.fromJson(json.decode(str));
-String loginResponseToJson(LoginResponse data) => json.encode(data.toJson());
+LoginResponse loginResponseFromJson(String str) =>
+    LoginResponse.fromJson(json.decode(str));
 
-/// DummyJSON login response format
+String loginResponseToJson(LoginResponse data) =>
+    json.encode(data.toJson());
+
 class LoginResponse {
-  int? id;
-  String? username;
-  String? email;
-  String? firstName;
-  String? lastName;
-  String? gender;
-  String? image;
-  String? accessToken;
-  String? refreshToken;
+  final bool? status;
+  final String? message;
+  final LoginData? data;
 
-  LoginResponse({
-    this.id,
-    this.username,
-    this.email,
-    this.firstName,
-    this.lastName,
-    this.gender,
-    this.image,
-    this.accessToken,
-    this.refreshToken,
+  const LoginResponse({
+    this.status,
+    this.message,
+    this.data,
   });
 
-  LoginResponse.fromJson(dynamic json) {
-    id = json['id'];
-    username = json['username'];
-    email = json['email'];
-    firstName = json['firstName'];
-    lastName = json['lastName'];
-    gender = json['gender'];
-    image = json['image'];
-    accessToken = json['accessToken'];
-    refreshToken = json['refreshToken'];
-  }
+  String? get accessToken => data?.accessToken;
 
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    map['id'] = id;
-    map['username'] = username;
-    map['email'] = email;
-    map['firstName'] = firstName;
-    map['lastName'] = lastName;
-    map['gender'] = gender;
-    map['image'] = image;
-    map['accessToken'] = accessToken;
-    map['refreshToken'] = refreshToken;
-    return map;
-  }
+  String? get refreshToken => data?.refreshToken;
+
+  factory LoginResponse.fromJson(Map<String, dynamic> json) =>
+      LoginResponse(
+        status: json["status"] ?? false,
+        message: json["message"] ?? "",
+        data: json["data"] != null ? LoginData.fromJson(json["data"]) : null,
+      );
+
+  Map<String, dynamic> toJson() =>
+      {
+        "status": status,
+        "message": message,
+        if (data != null) "data": data?.toJson(),
+      };
 }
+
+class LoginData {
+  final String? accessToken;
+  final String? refreshToken;
+  final UserData? user;
+
+  const LoginData({
+    this.accessToken,
+    this.refreshToken,
+    this.user,
+  });
+
+  factory LoginData.fromJson(Map<String, dynamic> json) =>
+      LoginData(
+        accessToken: json["accessToken"] ?? "",
+        refreshToken: json["refreshToken"] ?? "",
+        user: json["user"] != null ? UserData.fromJson(json["user"]) : null,
+      );
+
+  Map<String, dynamic> toJson() =>
+      {
+        "accessToken": accessToken,
+        "refreshToken": refreshToken,
+        if (user != null) "user": user?.toJson(),
+      };
+}
+

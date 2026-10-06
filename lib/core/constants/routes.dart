@@ -20,6 +20,30 @@ class RoutesName {
   /// Dashboard / Home screen path
   static const homePage = '/home';
 
-  /// Sign up screen path (currently unused)
+  /// Product detail screen path
+  static const productDetail = '/product-detail';
+
+  /// Cart screen path
+  static const cart = '/cart';
+
+  /// Checkout screen path
+  static const checkout = '/checkout';
+
+  /// Order Success screen path
+  static const orderSuccess = '/order-success';
+
+  /// Wishlist screen path
+  static const wishlist = '/wishlist';
+
+  /// User Profile screen path
+  static const profile = '/profile';
+
+  /// My Orders screen path
+  static const orders = '/orders';
+
+  /// Order Detail screen path
+  static const orderDetail = '/order-detail';
+
+  /// Sign up screen path
   static const signUp = '/sign-up';
 }

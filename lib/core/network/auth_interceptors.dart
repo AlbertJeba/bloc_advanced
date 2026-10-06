@@ -30,6 +30,7 @@ class AuthInterceptors extends Interceptor {
 
   bool _isAuthEndpoint(String path) {
     return path.contains(ApiEndpoint.login) ||
+        path.contains(ApiEndpoint.register) ||
         path.contains(ApiEndpoint.refreshToken) ||
         path.contains('auth/signup') ||
         path.contains('auth/forgot-password') ||
@@ -42,13 +43,11 @@ class AuthInterceptors extends Interceptor {
   }
 
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  void onRequest(RequestOptions options,
+      RequestInterceptorHandler handler,) async {
     final isExternal =
         options.path.startsWith('http://') ||
-        options.path.startsWith('https://');
+            options.path.startsWith('https://');
 
     // Automatically inject Bearer token for internal, non-auth endpoints
     if (!isExternal && !_isAuthEndpoint(options.path)) {
@@ -81,7 +80,8 @@ class AuthInterceptors extends Interceptor {
     // Do not retry if request already failed on a retry attempt
     if (err.requestOptions.extra['isRetry'] == true) {
       log(
-        'Retry request failed for ${err.requestOptions.path}. Redirecting to logout.',
+        'Retry request failed for ${err.requestOptions
+            .path}. Redirecting to logout.',
       );
       await LogoutService.instance.clearData();
       return handler.next(err);
@@ -94,21 +94,32 @@ class AuthInterceptors extends Interceptor {
     final data = err.response?.data;
     final isUserInactive =
         data is Map &&
-        data['message'] == 'User is inactive or deleted, please contact admin';
+            data['message'] ==
+                'User is inactive or deleted, please contact admin';
 
-    if (access == null || token == null || isUserInactive) {
-      log('Invalid session state or inactive user. Logging out.');
+    if (token == null || token.isEmpty || isUserInactive) {
+      log('No refresh token available or inactive user. Logging out.');
       await LogoutService.instance.clearData();
       return handler.next(err);
     }
 
-    final isExpired = JwtDecoder.isExpired(access);
+    bool isExpired = false;
+    if (access != null && access.isNotEmpty) {
+      try {
+        isExpired = JwtDecoder.isExpired(access);
+      } catch (_) {
+        isExpired = true;
+      }
+    } else {
+      isExpired = true;
+    }
 
     if (err.response?.statusCode == 401 || isExpired) {
       // If a refresh is already in progress, enqueue this failed request
       if (_isRefreshing) {
         log(
-          'Token refresh in progress. Enqueueing request: ${err.requestOptions.path}',
+          'Token refresh in progress. Enqueueing request: ${err.requestOptions
+              .path}',
         );
         _queue.add((options: err.requestOptions, handler: handler));
         return;
@@ -122,8 +133,7 @@ class AuthInterceptors extends Interceptor {
       try {
         final response = await dio.post(
           ApiEndpoint.refreshToken,
-          options: Options(headers: {'cookie': 'refresh_token=$token'}),
-          data: {'refreshToken': token, 'expiresInMins': tokenExpiryMins},
+          data: {'refreshToken': token},
         );
 
         final refreshTokenResponse = RefreshTokenResponse.fromJson(
@@ -136,6 +146,13 @@ class AuthInterceptors extends Interceptor {
         }
 
         setNewToken(newAccessToken);
+        if (refreshTokenResponse.data.refreshToken != null &&
+            refreshTokenResponse.data.refreshToken!.isNotEmpty) {
+          await _hiveService.set(
+            refreshToken,
+            refreshTokenResponse.data.refreshToken!,
+          );
+        }
         dio.options.headers['Authorization'] = 'Bearer $newAccessToken';
 
         // 1. Retry the original request

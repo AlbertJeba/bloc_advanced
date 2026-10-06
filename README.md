@@ -186,7 +186,7 @@ Every data model must follow this exact order:
 #### 1. 📂 Data (`lib/features/feature_name/data/`)
 *The "Hardware" of the feature. Handles raw data.*
 
-*   **Datasource** (`datasource/`): Files that actually call the API (e.g., `Dio` requests) or Local DB.
+*   **Data Source** (`data_source/`): Files that actually call the API (e.g., `Dio` requests) or Local DB.
 *   **Models** (`models/`): Dart classes that match the API JSON response exactly (using `fromJson`).
 *   **Repositories Implementation** (`repositories/`): The implementation of the Domain Repository. It decides *where* to get data (API vs Cache).
 
@@ -243,7 +243,7 @@ lib/
 │   │   └── presentation/
 │   ├── login/                   # Login feature
 │   │   ├── data/
-│   │   │   ├── datasource/
+│   │   │   ├── data_source/
 │   │   │   ├── models/
 │   │   │   └── repositories/
 │   │   ├── domain/
@@ -307,14 +307,14 @@ lib/
 Follow these steps to add a new feature (e.g., `profile`):
 
 - **Quick Scaffolding**: 
-  `mkdir -p lib/features/NAME/{data/{datasource,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}}`
+  `mkdir -p lib/features/NAME/{data/{data_source,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}}`
 - **File Initializing**:
-  `NAME="feature_name" && touch lib/features/$NAME/{data/datasource/${NAME}_remote_data_source.dart,data/repositories/${NAME}_repository_impl.dart,domain/repositories/${NAME}_repository.dart,domain/use_case/${NAME}_use_case.dart,presentation/cubit/{${NAME}_cubit.dart,${NAME}_state.dart},presentation/pages/${NAME}.dart}`
+  `NAME="feature_name" && touch lib/features/$NAME/{data/data_source/${NAME}_remote_data_source.dart,data/repositories/${NAME}_repository_impl.dart,domain/repositories/${NAME}_repository.dart,domain/use_case/${NAME}_use_case.dart,presentation/cubit/{${NAME}_cubit.dart,${NAME}_state.dart},presentation/pages/${NAME}.dart}`
 
 ### Step 1: Create the folder structure
 
 ```bash
-mkdir -p lib/features/profile/{data/{datasource,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}}
+mkdir -p lib/features/profile/{data/{data_source,models,repositories},domain/{repositories,use_case},presentation/{cubit,pages}}
 ```
 
 ### Step 2: Create files in order
@@ -323,14 +323,14 @@ mkdir -p lib/features/profile/{data/{datasource,models,repositories},domain/{rep
    ```
    lib/features/profile/domain/
    ├── repositories/profile_repository.dart    # Abstract interface
-   └── use_case/get_profile_usecase.dart       # Business logic
+   └── use_case/get_profile_use_case.dart      # Business logic
    ```
 
 2. **Data Layer** (Implement the contract)
    ```
    lib/features/profile/data/
    ├── models/profile_model.dart               # JSON model
-   ├── datasource/profile_remote_data_source.dart
+   ├── data_source/profile_remote_data_source.dart
    └── repositories/profile_repository_impl.dart
    ```
 

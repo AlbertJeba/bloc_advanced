@@ -11,10 +11,19 @@ import 'package:hive_flutter/hive_flutter.dart';
 /// Implementation of StorageService using Hive NoSQL database.
 /// Now enhanced with 256-bit AES encryption via SecureStorageService.
 class HiveService implements StorageService {
+  static HiveService? _instance;
   final SecureStorageService _secureStorage;
   Box? box;
 
-  HiveService(this._secureStorage);
+  factory HiveService([SecureStorageService? secureStorage]) {
+    if (_instance != null) {
+      return _instance!;
+    }
+    _instance = HiveService._internal(secureStorage ?? SecureStorageService());
+    return _instance!;
+  }
+
+  HiveService._internal(this._secureStorage);
 
   // Completer is used to wait for the box to open if it hasn't yet
   final Completer<Box> initCompleter = Completer<Box>();
@@ -24,22 +33,33 @@ class HiveService implements StorageService {
   Future<void> init() async {
     if (initCompleter.isCompleted) return;
     await Hive.initFlutter();
-    
+
     // Get the encryption key from secure storage
     final encryptionKey = await _secureStorage.getEncryptionKey();
-    
+
     // Open an encrypted box
     final encryptedBox = await Hive.openBox(
-      'bloc2025HiveService',
+      hiveBoxName,
       encryptionCipher: HiveAesCipher(encryptionKey),
     );
-    
+    box = encryptedBox;
     initCompleter.complete(encryptedBox);
   }
 
   /// Check if database is ready
   @override
   bool get hasInitialized => initCompleter.isCompleted;
+
+  /// Synchronous getter for saved language code
+  String? getLanguage() {
+    if (box != null && box!.isOpen) {
+      return box!.get(languageDbKey)?.toString();
+    }
+    if (Hive.isBoxOpen(hiveBoxName)) {
+      return Hive.box(hiveBoxName).get(languageDbKey)?.toString();
+    }
+    return null;
+  }
 
   /// Get a value by its key
   @override
@@ -97,3 +117,6 @@ class HiveService implements StorageService {
     return UserData.fromJson(userJson);
   }
 }
+
+/// Alias for HiveService for consistency with user request
+typedef HiveStorageService = HiveService;

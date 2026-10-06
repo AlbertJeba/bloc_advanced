@@ -5,9 +5,8 @@ import 'package:bloc_advanced/core/constants/routes.dart';
 import 'package:bloc_advanced/core/dependency_injection/injector.dart';
 import 'package:bloc_advanced/core/extension/roles.dart';
 import 'package:bloc_advanced/core/utils/configuration.dart';
-import 'package:bloc_advanced/features/login/domain/use_case/login_usecase.dart';
+import 'package:bloc_advanced/features/login/domain/use_case/login_use_case.dart';
 import 'package:bloc_advanced/features/login/presentation/cubit/login_cubit.dart';
-import 'package:bloc_advanced/features/login/presentation/cubit/login_state.dart';
 import 'package:bloc_advanced/shared/config/dimens.dart';
 import 'package:bloc_advanced/shared/theme/app_colors.dart';
 import 'package:bloc_advanced/shared/theme/text_styles.dart';
@@ -36,6 +35,13 @@ class _LoginState extends State<Login> {
     _initializeCubit();
   }
 
+  @override
+  void dispose() {
+    usernameTextController.dispose();
+    passwordTextController.dispose();
+    super.dispose();
+  }
+
   void _initializeCubit() {
     final loginUseCases = injector<LoginUseCases>();
     _loginCubit = LoginCubit(loginUseCases);
@@ -46,26 +52,28 @@ class _LoginState extends State<Login> {
     return BlocProvider(
       create: (context) => _loginCubit,
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surfaceColor,
         body: Stack(
           children: [
             // Decorative background elements
             Positioned(
-              top: -50,
-              right: -50,
+              top: -Dimens.standard_50,
+              right: -Dimens.standard_50,
               child: Container(
-                width: 200,
-                height: 200,
+                width: Dimens.standard_200,
+                height: Dimens.standard_200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.colorPrimary.withValues(alpha: 0.05),
                 ),
               ),
             ),
-            
+
             SafeArea(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: Dimens.standard_24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: Dimens.standard_24,
+                ),
                 child: BlocConsumer<LoginCubit, LoginState>(
                   listener: (BuildContext context, LoginState state) {
                     if (state.isSuccess && state.loginData != null) {
@@ -81,14 +89,14 @@ class _LoginState extends State<Login> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(height: Dimens.standard_40),
-                        
-                        // InstaMart Branding
+
+                        // App Branding
                         Center(
                           child: Column(
                             children: [
                               const Icon(
                                 Icons.shopping_basket_rounded,
-                                size: 80,
+                                size: Dimens.standard_80,
                                 color: AppColors.colorPrimary,
                               ),
                               const SizedBox(height: Dimens.standard_16),
@@ -107,9 +115,9 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                         ),
-                        
+
                         const SizedBox(height: Dimens.standard_60),
-                        
+
                         Text(
                           AppStrings.welcomeBack,
                           style: AppTextStyles.openSansBold24.copyWith(
@@ -123,9 +131,9 @@ class _LoginState extends State<Login> {
                             color: AppColors.textSecondary,
                           ),
                         ),
-                        
+
                         const SizedBox(height: Dimens.standard_40),
-                        
+
                         CustomTextInput(
                           textEditingController: usernameTextController,
                           hintText: AppStrings.enterUsername,
@@ -139,7 +147,7 @@ class _LoginState extends State<Login> {
                         if (state.usernameError.isNotEmpty)
                           _buildFieldValidation(state.usernameError),
                         const SizedBox(height: Dimens.standard_16),
-                        
+
                         CustomTextInput(
                           textEditingController: passwordTextController,
                           hintText: AppStrings.enterPassword,
@@ -152,9 +160,9 @@ class _LoginState extends State<Login> {
                         ),
                         if (state.passwordError.isNotEmpty)
                           _buildFieldValidation(state.passwordError),
-                        
+
                         const SizedBox(height: Dimens.standard_32),
-                        
+
                         PrimaryButton(
                           text: AppStrings.login.toUpperCase(),
                           onPressed: () {
@@ -165,39 +173,31 @@ class _LoginState extends State<Login> {
                           },
                           isLoading: state.isLoading,
                         ),
-                        
+
                         const SizedBox(height: Dimens.standard_32),
-                        
-                        // Demo Credentials Box
-                        Container(
-                          padding: const EdgeInsets.all(Dimens.standard_16),
-                          decoration: BoxDecoration(
-                            color: AppColors.appBackGround,
-                            borderRadius: BorderRadius.circular(Dimens.standard_12),
-                            border: Border.all(color: AppColors.colorLightGrey),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.info_outline, size: 18, color: AppColors.colorPrimary),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    AppStrings.testCredentials,
-                                    style: AppTextStyles.openSansBold14.copyWith(color: AppColors.colorPrimary),
-                                  ),
-                                ],
+
+                        // Don't have an account? Sign Up
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              AppStrings.dontHaveAccount,
+                              style: AppTextStyles.openSansRegular14.copyWith(
+                                color: AppColors.textSecondary,
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                AppStrings.testUserCredentials,
-                                style: AppTextStyles.openSansRegular14.copyWith(color: AppColors.textSecondary),
+                            ),
+                            GestureDetector(
+                              onTap: () => context.push(RoutesName.signUp),
+                              child: Text(
+                                AppStrings.signUp,
+                                style: AppTextStyles.openSansBold14.copyWith(
+                                  color: AppColors.colorGreen,
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: Dimens.standard_40),
+                        const SizedBox(height: Dimens.standard_32),
                       ],
                     );
                   },
@@ -215,11 +215,17 @@ class _LoginState extends State<Login> {
       padding: const EdgeInsets.only(top: Dimens.standard_6),
       child: Row(
         children: [
-          const Icon(Icons.error_outline, size: 14, color: AppColors.colorRed),
-          const SizedBox(width: 4),
+          const Icon(
+            Icons.error_outline,
+            size: Dimens.standard_14,
+            color: AppColors.colorRed,
+          ),
+          const SizedBox(width: Dimens.standard_4),
           Text(
             errorValue,
-            style: AppTextStyles.openSansRegular12.copyWith(color: AppColors.colorRed),
+            style: AppTextStyles.openSansRegular12.copyWith(
+              color: AppColors.colorRed,
+            ),
           ),
         ],
       ),

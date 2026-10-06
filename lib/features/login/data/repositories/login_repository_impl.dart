@@ -1,8 +1,9 @@
 import 'package:bloc_advanced/core/exceptions/http_exception.dart';
 import 'package:bloc_advanced/core/network/model/either.dart';
-import 'package:bloc_advanced/features/login/data/datasource/login_remote_data_source.dart';
+import 'package:bloc_advanced/features/login/data/data_source/login_remote_data_source.dart';
 import 'package:bloc_advanced/features/login/data/models/login_request.dart';
 import 'package:bloc_advanced/features/login/data/models/login_response.dart';
+import 'package:bloc_advanced/features/login/data/models/register_request.dart';
 import 'package:bloc_advanced/features/login/domain/repositories/login_repository.dart';
 
 class LoginRepositoryImpl extends LoginRepository {
@@ -15,5 +16,12 @@ class LoginRepositoryImpl extends LoginRepository {
     required LoginRequest user,
   }) {
     return _loginDataSource.login(user: user);
+  }
+
+  @override
+  Future<Either<AppException, LoginResponse>> registerUser({
+    required RegisterRequest user,
+  }) {
+    return _loginDataSource.register(user: user);
   }
 }

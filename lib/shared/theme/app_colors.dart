@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Professional color palette for the app - Updated for InstaMart (Fresh Green Theme)
+/// Professional color palette for the app - Fresh Green Theme
 class AppColors {
-  // Primary Colors - Fresh InstaMart Green
+  // Primary Colors - Fresh Green
   static const Color colorPrimary = Color(0xFF22C55E);
   static const Color colorPrimaryDark = Color(0xFF16A34A);
   static const Color colorPrimaryLight = Color(0xFF4ADE80);
@@ -26,6 +26,7 @@ class AppColors {
   // Neutral Colors
   static const Color colorWhite = Color(0xFFFFFFFF);
   static const Color colorBlack = Color(0xFF0F172A);
+  static const Color colorTransparent = Color(0x00000000);
   static const Color colorLightGrey = Color(0xFFE2E8F0);
   static const Color colorGrey = Color(0xFFCBD5E1);
   static const Color colorDarkGrey = Color(0xFF475569);

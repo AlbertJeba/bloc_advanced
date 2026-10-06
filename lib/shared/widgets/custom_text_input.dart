@@ -7,10 +7,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 /// CustomTextInput - Reusable Styled Text Field Widget
-/// 
+///
 /// A custom text input field with consistent styling, validation support,
 /// and optional features like password visibility toggle.
-/// 
+///
 /// Features:
 /// - Title label above the field
 /// - Optional required field indicator (*)
@@ -19,7 +19,7 @@ import 'package:flutter/services.dart';
 /// - Error message display
 /// - Input type and length restrictions
 /// - Numeric input blocking option
-/// 
+///
 /// Usage:
 /// ```dart
 /// CustomTextInput(
@@ -33,40 +33,40 @@ import 'package:flutter/services.dart';
 class CustomTextInput extends StatefulWidget {
   /// Placeholder text shown when the field is empty.
   final String hintText;
-  
+
   /// Optional SVG icon path to display at the end of the field.
   final String? svgIconPath;
-  
+
   /// Label text displayed above the input field.
   final String title;
-  
+
   /// If true, obscures text and shows password toggle icon.
   final bool isPassword;
-  
+
   /// If true, displays a red asterisk (*) next to the title.
   final bool isRequired;
-  
+
   /// Static error message to display below the field.
   final String errorMessage;
-  
+
   /// If false, the field is disabled and grayed out.
   final bool isEnabled;
-  
+
   /// Controller for the text field value.
   final TextEditingController textEditingController;
-  
+
   /// Callback fired when the text changes.
   final Function(String value)? onChange;
-  
+
   /// Keyboard type (email, number, text, etc.).
   final TextInputType? inputType;
-  
+
   /// Maximum character length allowed.
   final int? maxLength;
-  
+
   /// If true, blocks numeric input.
   final bool? disableNumber;
-  
+
   /// Optional tooltip text (currently unused).
   final String tooltip;
 
@@ -93,7 +93,7 @@ class CustomTextInput extends StatefulWidget {
 }
 
 /// State for [CustomTextInput].
-/// 
+///
 /// Manages:
 /// - Text presence tracking for icon color changes
 /// - Password visibility toggle
@@ -149,7 +149,7 @@ class CustomTextInputState extends State<CustomTextInput> {
             children: [
               Text(
                 widget.title,
-                style: AppTextStyles.openSansRegular14w400.copyWith(
+                style: AppTextStyles.openSans14w400.copyWith(
                   color: AppColors.colorBlack,
                 ),
               ),
@@ -157,7 +157,7 @@ class CustomTextInputState extends State<CustomTextInput> {
               widget.isRequired
                   ? Text(
                       '*',
-                      style: AppTextStyles.openSansRegular14w400.copyWith(
+                      style: AppTextStyles.openSans14w400.copyWith(
                         color: AppColors.colorRed,
                       ),
                     )

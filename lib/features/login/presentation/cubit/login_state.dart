@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import 'package:bloc_advanced/features/login/data/models/login_response.dart';
+part of 'login_cubit.dart';
 
 /// LoginState - Holds all the data for the login screen.
 ///
@@ -72,12 +71,12 @@ class LoginState extends Equatable {
   /// Two states are equal if all these values are the same.
   @override
   List<Object?> get props => [
-        message,
-        usernameError,
-        passwordError,
-        isLoading,
-        isFailure,
-        isSuccess,
-        loginData,
-      ];
+    message,
+    usernameError,
+    passwordError,
+    isLoading,
+    isFailure,
+    isSuccess,
+    loginData,
+  ];
 }

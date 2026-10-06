@@ -37,19 +37,21 @@ class _SplashScreenState extends State<SplashScreen>
       duration: const Duration(milliseconds: 1500),
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
-      ),
-    );
+    _fadeAnimation =
+        Tween<double>(begin: Dimens.standard_0, end: Dimens.standard_1).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+          ),
+        );
 
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _animationController,
-        curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
-      ),
-    );
+    _scaleAnimation =
+        Tween<double>(begin: Dimens.decimal_80, end: Dimens.standard_1).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: const Interval(0.0, 0.6, curve: Curves.elasticOut),
+          ),
+        );
 
     _animationController.forward();
   }
@@ -91,30 +93,30 @@ class _SplashScreenState extends State<SplashScreen>
           children: [
             // Decorative background pattern (circles)
             Positioned(
-              top: -100,
-              right: -100,
+              top: -Dimens.standard_100,
+              right: -Dimens.standard_100,
               child: Container(
-                width: 300,
-                height: 300,
+                width: Dimens.standard_300,
+                height: Dimens.standard_300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: AppColors.colorWhite.withValues(alpha: 0.1),
                 ),
               ),
             ),
             Positioned(
-              bottom: -50,
-              left: -50,
+              bottom: -Dimens.standard_50,
+              left: -Dimens.standard_50,
               child: Container(
-                width: 200,
-                height: 200,
+                width: Dimens.standard_200,
+                height: Dimens.standard_200,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withValues(alpha: 0.1),
+                  color: AppColors.colorWhite.withValues(alpha: 0.1),
                 ),
               ),
             ),
-            
+
             Center(
               child: AnimatedBuilder(
                 animation: _animationController,
@@ -126,38 +128,40 @@ class _SplashScreenState extends State<SplashScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // App Icon (using a grocery basket icon as placeholder)
                           const Icon(
                             Icons.shopping_basket_rounded,
-                            size: 100,
-                            color: Colors.white,
+                            size: Dimens.standard_100,
+                            color: AppColors.colorWhite,
                           ),
                           const SizedBox(height: Dimens.standard_24),
-                          
+
                           // App name text
                           Text(
                             AppStrings.appName,
                             style: AppTextStyles.openSansBold40.copyWith(
                               color: AppColors.colorWhite,
-                              letterSpacing: 1.2,
+                              letterSpacing:
+                                  Dimens.standard_1 + Dimens.decimal_20,
                             ),
                           ),
                           const SizedBox(height: Dimens.standard_8),
-                          
+
                           // Tagline text
                           Text(
                             AppStrings.appSubtitle,
                             style: AppTextStyles.openSansRegular16.copyWith(
-                              color: AppColors.colorWhite.withValues(alpha: 0.9),
+                              color: AppColors.colorWhite.withValues(
+                                alpha: 0.9,
+                              ),
                             ),
                           ),
                           const SizedBox(height: Dimens.standard_60),
-                          
-                          CustomLoader(
+
+                          const CustomLoader(
                             size: Dimens.standard_32,
-                            strokeWidth: 3,
+                            strokeWidth: Dimens.standard_3,
                             isCentered: false,
-                            color: Colors.white,
+                            color: AppColors.colorWhite,
                           ),
                         ],
                       ),

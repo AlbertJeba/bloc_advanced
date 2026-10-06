@@ -7,13 +7,17 @@ import 'package:bloc_advanced/main/app_env.dart';
 
 const file = 'file';
 
-/// Path to the English translation file
+/// Paths to translation files
 const englishLanguage = 'assets/language/en.json';
+const tamilLanguage = 'assets/language/ta.json';
+const hindiLanguage = 'assets/language/hi.json';
 
 /// Database Keys (used for Hive storage)
+const hiveBoxName = 'bloc2025HiveService';
 const userDbKey = 'userDbKey'; // Key to store user object
-const userToken = 'token';     // Key to store auth token
+const userToken = 'token'; // Key to store auth token
 const refreshToken = 'refreshToken'; // Key to store refresh token
+const languageDbKey = 'languageDbKey'; // Key to store preferred language
 const sendOtpFlag = 'send';
 const verifyOtpFlag = 'verify';
 const seenOnboarding = 'seenOnboarding';

@@ -1,17 +1,20 @@
 import 'package:bloc_advanced/core/constants/app_strings.dart';
 import 'package:bloc_advanced/core/constants/constant.dart';
 import 'package:bloc_advanced/core/database/hive_storage_service.dart';
+import 'package:bloc_advanced/core/exceptions/http_exception.dart';
 import 'package:bloc_advanced/core/network/model/either.dart';
 import 'package:bloc_advanced/core/network/network_service.dart';
 import 'package:bloc_advanced/core/utils/configuration.dart';
 import 'package:bloc_advanced/core/utils/error_logger.dart';
 import 'package:bloc_advanced/features/login/data/models/login_request.dart';
 import 'package:bloc_advanced/features/login/data/models/login_response.dart';
-import 'package:bloc_advanced/features/login/domain/use_case/login_usecase.dart';
+import 'package:bloc_advanced/features/login/domain/use_case/login_use_case.dart';
 import 'package:bloc_advanced/shared/models/user_data.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:get_it/get_it.dart';
-import 'login_state.dart';
+
+part 'login_state.dart';
 
 /// LoginCubit - Handles all the login logic using the BLoC pattern.
 ///
@@ -36,9 +39,9 @@ class LoginCubit extends Cubit<LoginState> {
   /// - _hiveService: For saving data locally (like the auth token)
   /// - _networkService: For updating API headers with the token
   LoginCubit(this._loginUseCases)
-      : _hiveService = GetIt.instance<HiveService>(),
-        _networkService = GetIt.instance<NetworkService>(),
-        super(const LoginState());
+    : _hiveService = GetIt.instance<HiveService>(),
+      _networkService = GetIt.instance<NetworkService>(),
+      super(const LoginState());
 
   /// Validates inputs and starts login if valid.
   ///
@@ -60,16 +63,17 @@ class LoginCubit extends Cubit<LoginState> {
 
     if (usernameError.isNotEmpty || passwordError.isNotEmpty) {
       // Has errors - show them
-      emit(state.copyWith(
-        usernameError: usernameError,
-        passwordError: passwordError,
-      ));
+      emit(
+        state.copyWith(
+          usernameError: usernameError,
+          passwordError: passwordError,
+        ),
+      );
     } else {
       // No errors - proceed with login
       LoginRequest request = LoginRequest(
         username: username,
         password: password,
-        expiresInMins: tokenExpiryMins,
       );
       login(request);
     }
@@ -87,36 +91,28 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(isLoading: true));
 
     // Call the API
-    Either result = await _loginUseCases.login(user: user);
+    Either<AppException, LoginResponse> result = await _loginUseCases.login(
+      user: user,
+    );
 
-    // Handle the result (Either is like a box that contains either an error or success)
+    // Handle the result
     result.fold(
       // This runs if there's an error
       (error) {
         ErrorLogger.log('LoginCubit.login', error.identifier);
-        emit(state.copyWith(
-          message: error.message,
-          isLoading: false,
-          isFailure: true,
-          isSuccess: false,
-        ));
+        emit(
+          state.copyWith(
+            message: error.message,
+            isLoading: false,
+            isFailure: true,
+            isSuccess: false,
+          ),
+        );
       },
       // This runs if successful
-      (loginResponse) {
-        LoginResponse response = loginResponse as LoginResponse;
-
-        // Create UserData object from the API response
-        UserData userData = UserData(
-          id: response.id,
-          username: response.username,
-          email: response.email,
-          firstName: response.firstName,
-          lastName: response.lastName,
-          gender: response.gender,
-          image: response.image,
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-        );
+      (response) {
+        // Extract UserData from the API response envelope
+        final userData = response.data?.user ?? UserData();
 
         // Save user data to memory (for quick access)
         UserPreferences userPreferences = UserPreferences.instance;
@@ -124,19 +120,25 @@ class LoginCubit extends Cubit<LoginState> {
 
         // Save token to Hive (local database)
         String token = response.accessToken ?? '';
+        String refToken = response.refreshToken ?? '';
         _hiveService.set(userToken, token);
+        if (refToken.isNotEmpty) {
+          _hiveService.set(refreshToken, refToken);
+        }
         _hiveService.setUser(userData);
 
         // Add token to all future API requests
         _networkService.updateHeader({'Authorization': 'Bearer $token'});
 
         // Show success state
-        emit(state.copyWith(
-          isLoading: false,
-          isSuccess: true,
-          isFailure: false,
-          loginData: response,
-        ));
+        emit(
+          state.copyWith(
+            isLoading: false,
+            isSuccess: true,
+            isFailure: false,
+            loginData: response,
+          ),
+        );
       },
     );
   }
@@ -161,19 +163,18 @@ class LoginCubit extends Cubit<LoginState> {
 
   /// Clears all state values back to default
   void clearState() {
-    emit(state.copyWith(
-      message: '',
-      isFailure: false,
-      isLoading: false,
-      isSuccess: false,
-    ));
+    emit(
+      state.copyWith(
+        message: '',
+        isFailure: false,
+        isLoading: false,
+        isSuccess: false,
+      ),
+    );
   }
 
   /// Resets just the error state (after showing error toast)
   void resetError() {
-    emit(state.copyWith(
-      isFailure: false,
-      message: '',
-    ));
+    emit(state.copyWith(isFailure: false, message: ''));
   }
 }

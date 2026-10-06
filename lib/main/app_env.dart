@@ -1,25 +1,25 @@
 /// Available application environments.
-/// 
+///
 /// - [dev] - Development environment for local testing
 /// - [stage] - Staging/UAT environment for pre-production testing
 /// - [prod] - Production environment for live users
 enum AppEnvironment { dev, stage, prod }
 
 /// EnvInfo - Environment Information Provider
-/// 
+///
 /// Abstract class that provides environment-specific configuration.
 /// Call [initialize] once at app startup to set the current environment.
-/// 
+///
 /// Example:
 /// ```dart
 /// EnvInfo.initialize(AppEnvironment.dev);
-/// print(EnvInfo.baseUrl); // https://dev-api.example.com/
+/// print(EnvInfo.baseUrl); // http://127.0.0.1:3000/api/v1/
 /// ```
 abstract class EnvInfo {
   static AppEnvironment _environment = AppEnvironment.dev;
 
   /// Initializes the environment configuration.
-  /// 
+  ///
   /// Must be called once in [mainCommon] before accessing any properties.
   static void initialize(AppEnvironment environment) {
     EnvInfo._environment = environment;
@@ -48,14 +48,14 @@ abstract class EnvInfo {
 }
 
 /// Private extension to provide environment-specific values.
-/// 
+///
 /// Add your environment-specific configurations here.
 extension _EnvProperties on AppEnvironment {
   /// App display names per environment.
   static const _appTitles = {
-    AppEnvironment.dev: 'InstaMart Dev',
-    AppEnvironment.stage: 'InstaMart Staging',
-    AppEnvironment.prod: 'InstaMart',
+    AppEnvironment.dev: 'Grocery Store Dev',
+    AppEnvironment.stage: 'Grocery Store Staging',
+    AppEnvironment.prod: 'Grocery Store',
   };
 
   /// Database connection strings (currently unused).
@@ -66,10 +66,8 @@ extension _EnvProperties on AppEnvironment {
   };
 
   /// API base URLs per environment.
-  /// 
-  /// Update these with your actual API endpoints.
   static const _baseUrl = {
-    AppEnvironment.dev: 'https://dummyjson.com/',
+    AppEnvironment.dev: 'http://127.0.0.1:3000/api/v1/',
     AppEnvironment.stage: 'https://dummyjson.com/',
     AppEnvironment.prod: 'https://dummyjson.com/',
   };
@@ -83,7 +81,7 @@ extension _EnvProperties on AppEnvironment {
 
   /// Web page URLs per environment (for WebViews, etc.).
   static const _webPageUrl = {
-    AppEnvironment.dev: 'http://example1.com',
+    AppEnvironment.dev: 'http://localhost:3000',
     AppEnvironment.stage: 'https://bexample2.com',
     AppEnvironment.prod: 'https://example3.com',
   };
