@@ -27,9 +27,13 @@ A production-ready Flutter template demonstrating **Clean Architecture**, **BLoC
 
 ## 📱 What This App Does
 
-1.  **Splash Screen** - Animations and session check.
-2.  **Login Screen** - Authentication with secure token handling.
-3.  **InstaMart Menu** - A premium grocery menu with horizontal categories, **Skeletonizer** loading, and **Share** functionality.
+1.  **Splash Screen** - Smooth animations and session/token validation check.
+2.  **Login & Authentication** - Secure token handling, login flow, and session persistence in encrypted storage.
+3.  **InstaMart Grocery Catalog** - Category browsing, deal banners, product grid with **Skeletonizer** shimmer loading, and detailed product views.
+4.  **Shopping Cart** - Item quantity stepper, free delivery threshold tracker, and bill breakdown.
+5.  **Checkout & Orders** - Delivery address selection, order placement, order success confirmation, and order history tracking.
+6.  **Wishlist** - Favorite items management and quick toggle.
+7.  **Core Services** - Universal sharing (`share_plus`), system permissions (`permission_handler`), and URL launcher (`url_launcher`).
 
 ---
 
@@ -39,8 +43,8 @@ A production-ready Flutter template demonstrating **Clean Architecture**, **BLoC
 
 | Requirement | Version |
 |-------------|---------|
-| Flutter SDK | `3.41.7` |
-| Dart SDK | `^3.10.3` |
+| Flutter SDK | `3.44.9` |
+| Dart SDK | `>=3.12.0 <4.0.0` |
 | Android Studio / VS Code | Latest |
 | Xcode (for iOS) | Latest |
 
@@ -238,24 +242,13 @@ lib/
 │
 ├── features/                    # Feature modules
 │   ├── splash/                  # Splash screen feature
-│   │   ├── data/
-│   │   ├── domain/
-│   │   └── presentation/
-│   ├── login/                   # Login feature
-│   │   ├── data/
-│   │   │   ├── data_source/
-│   │   │   ├── models/
-│   │   │   └── repositories/
-│   │   ├── domain/
-│   │   │   ├── repositories/
-│   │   │   └── use_case/
-│   │   └── presentation/
-│   │       ├── cubit/
-│   │       └── pages/
-│   ├── grocery_menu/            # InstaMart style menu feature
-│   │   ├── data/
-│   │   ├── domain/
-│   │   └── presentation/
+│   ├── login/                   # Login & Sign Up feature
+│   ├── grocery/                 # Grocery home catalog & product details
+│   ├── cart/                    # Shopping cart & bill summary
+│   ├── checkout/                # Checkout & order placement
+│   ├── orders/                  # Order history & tracking
+│   ├── wishlist/                # Saved items & favorites
+│   └── profile/                 # User profile & settings
 │
 ├── routes/                      # Navigation
 │   └── app_routes.dart          # GoRouter configuration
@@ -291,13 +284,17 @@ lib/
 | `exceptions/` | Custom exception classes for error handling. |
 | `extension/` | Dart extension methods for added functionality. |
 | `network/` | Dio client setup, **5000ms timeouts**, Auth interceptors, API helpers. |
+| `services/` | Universal share (`ShareService`), URL/dialer (`UrlService`), permissions (`PermissionService`). |
 | `utils/` | General utility functions and helpers. |
 
 ### 📂 Shared (`lib/shared/`)
 *Reusable components used across multiple features.*
 
-| `services/` | `ShareService`, `UrlService`, `PermissionService`. |
-| `theme/` | App theme, colors, and text styles. |
+| Folder | Purpose |
+|--------|---------|
+| `config/` | Dimensions, padding, and spacing tokens (`Dimens.xxx`). |
+| `models/` | Shared data models and DTOs. |
+| `theme/` | App theme, colors (`AppColors`), and typography (`AppTextStyles`). |
 | `widgets/` | `PrimaryButton`, `CustomNetworkImage`, `CustomLoader`, `CustomTextInput`, `CustomToast`. |
 
 ---
@@ -365,13 +362,13 @@ Add to `lib/core/dependency_injection/injector.dart`:
 
 Add to `lib/core/constants/routes.dart`:
 ```dart
-static const profilePath = '/profile';
+static const profile = '/profile';
 ```
 
 Add to `lib/routes/app_routes.dart`:
 ```dart
 GoRoute(
-  path: RoutesName.profilePath,
+  path: RoutesName.profile,
   builder: (context, state) => const ProfilePage(),
 ),
 ```
@@ -388,8 +385,13 @@ We use **GoRouter** for navigation. Routes are defined in two places:
 class RoutesName {
   static const defaultPath = '/';           // Splash
   static const loginPath = '/login';        // Login
-  static const homePage = '/home';          // Dashboard
-  static const profilePath = '/profile';    // Profile (example)
+  static const homePage = '/home';          // Grocery Home Catalog
+  static const productDetail = '/product-detail'; // Product Detail
+  static const cart = '/cart';              // Cart
+  static const checkout = '/checkout';      // Checkout
+  static const wishlist = '/wishlist';      // Wishlist
+  static const profile = '/profile';        // Profile
+  static const orders = '/orders';          // Orders
 }
 ```
 
@@ -397,10 +399,11 @@ class RoutesName {
 
 ```dart
 final GoRouter router = GoRouter(
+  navigatorKey: navigatorKey,
   routes: [
     GoRoute(path: '/', builder: (_, __) => const SplashScreen()),
     GoRoute(path: '/login', builder: (_, __) => const Login()),
-    GoRoute(path: '/home', builder: (_, __) => const Dashboard()),
+    GoRoute(path: '/home', builder: (_, __) => const GroceryHomePage()),
   ],
 );
 ```
@@ -596,8 +599,15 @@ This file manages all third-party libraries and assets.
 | `flutter_svg` | Allows rendering SVG (vector) icons. |
 | `cupertino_icons` | iOS style icons. |
 | `cached_network_image` | Loads and caches internet images (so they load faster next time). |
-| **Storage & Utils** |
+| `skeletonizer` | Skeleton loading shimmer effect for product catalogs. |
+| **Storage & Security** |
 | `hive_flutter` | Fast local NoSQL database (storage) for the app. |
+| `flutter_secure_storage` | Secure keystore/keychain storage for Hive AES-256 encryption. |
+| **Services & Utils** |
+| `share_plus` | Native sharing of products and content. |
+| `permission_handler` | System permissions handling (camera, storage, etc.). |
+| `url_launcher` | Web browser, phone dialer, and email launching. |
+| `jwt_decoder` | Decodes JWT tokens to inspect expiry and payload. |
 | `intl` | Date and number formatting. |
 
 ### Pubspec File Explained
@@ -605,8 +615,8 @@ This file manages all third-party libraries and assets.
 Besides `dependencies`, the `pubspec.yaml` contains:
 
 1.  **Environment**: 
-    *   **Dart SDK**: `^3.10.3` (Requires Dart SDK version 3.10.3 or higher).
-    *   **Flutter SDK**: `3.41.7` (Required Flutter version for this project).
+    *   **Dart SDK**: `>=3.12.0 <4.0.0` (Requires Dart SDK version 3.12.0 or higher).
+    *   **Flutter SDK**: `3.44.9` (Required Flutter version for this project).
 2.  **Dev Dependencies**: Tools only for developers, not in the final app.
     *   `flutter_lints`: Linting rules for code quality and consistency.
     *   `flutter_launcher_icons`: Generates app icons for Android/iOS.
@@ -647,17 +657,18 @@ r (in terminal) or Ctrl+Shift+F5 (VS Code)
 ### Building
 
 ```bash
-# Build APK (Android)
-flutter build apk --release
+# Build APKs (by flavor)
+flutter build apk -t lib/main/main_dev.dart      # Dev APK
+flutter build apk -t lib/main/main_staging.dart  # Staging APK
+flutter build apk -t lib/main.dart               # Production APK
 
-# Build App Bundle (Android - for Play Store)
-flutter build appbundle --release
+# Build App Bundles (for Play Store)
+flutter build appbundle --target=lib/main/main_dev.dart
+flutter build appbundle --target=lib/main/main_staging.dart
+flutter build appbundle --target=lib/main.dart
 
 # Build iOS
 flutter build ios --release
-
-# Build with specific flavor
-flutter build apk -t lib/main/main_prod.dart --release
 ```
 
 ### Utilities
@@ -695,8 +706,8 @@ dart run rename_app:main all="App Name"
 |-------|----------|
 | `flutter pub get` fails | Run `flutter clean` then `flutter pub get` |
 | Build fails after switching branches | Run `flutter clean && flutter pub get` |
-| iOS build fails | Run `cd ios && pod install --repo-update && cd ..` |
-| Android build fails | Check `minSdkVersion` in `android/app/build.gradle` |
+| iOS build fails | SPM managed: run `flutter clean && flutter pub get`, clean Xcode build folder (`Cmd+Shift+K`) |
+| Android build fails | Check `minSdk` / `compileSdk` in `android/app/build.gradle.kts` |
 | Fonts not loading | Ensure fonts are under `flutter:` section in `pubspec.yaml` |
 | Assets not found | Run `flutter pub get` after adding new assets |
 | GetIt not initialized | Ensure `await init()` is called in `main()` before `runApp()` |
@@ -748,6 +759,10 @@ dart run rename_app:main all="App Name"
 ## 👨‍💻 Author
 
 **Albert Jeba** - Clean Architecture Flutter Base Template
+
+---
+
+*Last Updated: 13 October 2026, 12:44 PM IST*
 
 
 
